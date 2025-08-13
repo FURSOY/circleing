@@ -71,12 +71,21 @@ export default class GameScene extends Phaser.Scene {
         this.enemies.clear(true, true);
     }
 
-    spawnNextWaveZone() {
+    spawnNextWaveButton() {
         const { width, height } = this.scale;
-        const zoneX = Phaser.Math.Between(100, width - 100);
-        const zoneY = Phaser.Math.Between(100, height - 100);
-        this.nextWaveZone = this.add.circle(zoneX, zoneY, 40, 0x00ff00, 0.3);
-        this.physics.add.existing(this.nextWaveZone, false);
+        const btnX = Phaser.Math.Between(150, width - 150);
+        const btnY = Phaser.Math.Between(150, height - 150);
+
+        // Buton arka planı
+        this.nextWaveButton = this.add.rectangle(btnX, btnY, 120, 60, 0x4444ff, 0.8);
+        this.physics.add.existing(this.nextWaveButton, false);
+
+        // Buton yazısı
+        this.nextWaveText = this.add.text(btnX, btnY, "START WAVE", {
+            fontSize: "18px",
+            fill: "#fff"
+        }).setOrigin(0.5);
+
         this.nextWaveTimer = 0;
     }
 
@@ -93,25 +102,54 @@ export default class GameScene extends Phaser.Scene {
             if (this.waveTimer <= 0) {
                 this.inWave = false;
                 this.clearEnemies();
-                this.spawnNextWaveZone();
+                this.spawnNextWaveButton();
             }
-        } else if (this.nextWaveZone) {
-            const dx = this.player.x - this.nextWaveZone.x;
-            const dy = this.player.y - this.nextWaveZone.y;
+        }
+        else if (this.nextWaveButton) {
+            const dx = this.player.x - this.nextWaveButton.x;
+            const dy = this.player.y - this.nextWaveButton.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist < 50) {
+            if (dist < 60) {
                 this.nextWaveTimer += delta / 1000;
                 if (this.nextWaveTimer >= 3) {
-                    this.currentWave++;
-                    this.nextWaveZone.destroy();
-                    this.nextWaveZone = null;
-                    this.startWave();
+                    this.startCountdown(); // Geri sayım başlat
                 }
-            } else this.nextWaveTimer = 0;
+            } else {
+                this.nextWaveTimer = 0;
+            }
         }
 
         this.waveText.setText(`Wave: ${this.currentWave}`);
         this.timeText.setText(this.inWave ? `Time Left: ${Math.ceil(this.waveTimer)}` : 'Wave Complete');
     }
+
+    startCountdown() {
+        if (this.countdownText) return; // Tekrarlamasın
+
+        this.nextWaveButton.destroy();
+        this.nextWaveText.destroy();
+
+        let countdown = 3;
+        this.countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, countdown, {
+            fontSize: '64px',
+            fill: '#fff'
+        }).setOrigin(0.5);
+
+        const timer = this.time.addEvent({
+            delay: 1000,
+            repeat: 2,
+            callback: () => {
+                countdown--;
+                this.countdownText.setText(countdown);
+                if (countdown <= 0) {
+                    this.countdownText.destroy();
+                    this.countdownText = null;
+                    this.currentWave++;
+                    this.startWave();
+                }
+            }
+        });
+    }
+
 }
