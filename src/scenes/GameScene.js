@@ -8,10 +8,10 @@ export default class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
         this.waveConfigs = [
-            { small: 30 },
-            { small: 50, big: 5 },
-            { small: 50, fast: 20 },
-            { small: 75, fast: 40, big: 20 },
+            { small: 100 },
+            { small: 150, big: 30 },
+            { small: 200, fast: 50 },
+            { small: 200, fast: 100, big: 40 },
         ];
     }
 
@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Wave değişkenleri
         this.currentWave = 1;
-        this.waveTime = 10;
+        this.waveTime = 20;
         this.waveTimer = this.waveTime;
         this.inWave = false;
         this.nextWaveZone = null;
@@ -55,9 +55,33 @@ export default class GameScene extends Phaser.Scene {
 
         const config = this.waveConfigs[this.currentWave - 1] || { small: 5 };
 
-        if (config.small) for (let i = 0; i < config.small; i++) this.enemies.add(new Enemy(this, Phaser.Math.Between(0, this.scale.width), -20, this.player));
-        if (config.big) for (let i = 0; i < config.big; i++) this.enemies.add(new BigEnemy(this, Phaser.Math.Between(0, this.scale.width), -20, this.player));
-        if (config.fast) for (let i = 0; i < config.fast; i++) this.enemies.add(new FastEnemy(this, Phaser.Math.Between(0, this.scale.width), -20, this.player));
+        const spawnEnemy = (EnemyClass, count) => {
+            for (let i = 0; i < count; i++) {
+                // Rastgele kenar seç (0: üst, 1: alt, 2: sol, 3: sağ)
+                const side = Phaser.Math.Between(0, 3);
+                let x, y;
+
+                if (side === 0) { // üst
+                    x = Phaser.Math.Between(0, this.scale.width);
+                    y = -20;
+                } else if (side === 1) { // alt
+                    x = Phaser.Math.Between(0, this.scale.width);
+                    y = this.scale.height + 20;
+                } else if (side === 2) { // sol
+                    x = -20;
+                    y = Phaser.Math.Between(0, this.scale.height);
+                } else { // sağ
+                    x = this.scale.width + 20;
+                    y = Phaser.Math.Between(0, this.scale.height);
+                }
+
+                this.enemies.add(new EnemyClass(this, x, y, this.player));
+            }
+        };
+
+        if (config.small) spawnEnemy(Enemy, config.small);
+        if (config.big) spawnEnemy(BigEnemy, config.big);
+        if (config.fast) spawnEnemy(FastEnemy, config.fast);
 
         // Grup içi çarpışmayı güncelle
         this.enemies.children.iterate(e1 => {
