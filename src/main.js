@@ -4,8 +4,8 @@ import GameScene from './scenes/GameScene';
 
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1920,
+    height: 1080,
     backgroundColor: '#000000',
     physics: {
         default: 'arcade',
@@ -16,7 +16,7 @@ const config = {
     },
     scene: [MenuScene, GameScene],
     scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     }
 };

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 export default class FastEnemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, player) {
+    constructor(scene, x, y, player, aiMode) {
         const radius = 15;
         const color = 0xffff00; // sarı
 
@@ -21,13 +21,37 @@ export default class FastEnemy extends Phaser.Physics.Arcade.Sprite {
 
         this.player = player;
         this.speed = 180; // hızlı
+        this.aiMode = aiMode;
     }
 
     update() {
         if (!this.player.active) return;
+
         const dx = this.player.x - this.x;
         const dy = this.player.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 0) this.body.setVelocity((dx / dist) * this.speed, (dy / dist) * this.speed);
+
+        if (dist > 0) {
+            if (this.aiMode === 'CLASSIC') {
+                // Eski düz takip mantığı
+                this.body.setVelocity((dx / dist) * this.speed, (dy / dist) * this.speed);
+            } else {
+                // Yeni "önleme" mantığı
+                const timeToReach = dist / this.speed;
+                const futurePlayerX = this.player.x + (this.player.body.velocity.x * timeToReach * 1.0); // Daha "akıllı"
+                const futurePlayerY = this.player.y + (this.player.body.velocity.y * timeToReach * 1.0);
+
+                const futureDx = futurePlayerX - this.x;
+                const futureDy = futurePlayerY - this.y;
+                const futureDist = Math.sqrt(futureDx * futureDx + futureDy * futureDy);
+
+                if (futureDist > 0) {
+                    this.body.setVelocity(
+                        (futureDx / futureDist) * this.speed,
+                        (futureDy / futureDist) * this.speed
+                    );
+                }
+            }
+        }
     }
 }

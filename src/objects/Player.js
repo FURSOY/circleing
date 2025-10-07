@@ -5,7 +5,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         const config = {
             radius: 20,
             color: 0xffffff,
-            maxSpeed: 400,
+            maxSpeed: 500,
             acceleration: 3000,
             drag: 600,
             snapToPointerDist: 1,
@@ -33,10 +33,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.body.setDrag(config.drag, config.drag);
 
         // Slow radius görseli
-        // this.slowCircle = scene.add.graphics();
-        // this.slowCircle.lineStyle(1, 0xff0000, 0.5);
-        // this.slowCircle.strokeCircle(0, 0, config.slowRadius);
-        // this.slowCircle.setPosition(x, y);
+        if (scene.registry.get('showSlowRadius')) {
+            this.slowCircle = scene.add.graphics();
+            this.slowCircle.lineStyle(1, 0xff0000, 0.5);
+            this.slowCircle.strokeCircle(0, 0, config.slowRadius);
+            this.slowCircle.setPosition(x, y);
+        } else {
+            this.slowCircle = null;
+        }
 
         // Hız göstergesi
         this.speedText = scene.add.text(10, scene.scale.height - 30, `Speed: 0 / ${config.maxSpeed}`, {
@@ -52,7 +56,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         // Slow radius pozisyonunu güncelle
-        // this.slowCircle.setPosition(this.x, this.y);
+        if (this.slowCircle) {
+            this.slowCircle.setPosition(this.x, this.y);
+        }
 
         if (dist <= snapToPointerDist) {
             this.body.setVelocity(0, 0);

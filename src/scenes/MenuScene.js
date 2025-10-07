@@ -23,5 +23,44 @@ export default class MenuScene extends Phaser.Scene {
         startText.on('pointerdown', () => {
             this.scene.start('GameScene');
         });
+
+        // AI Modu seçimi
+        this.registry.set('aiMode', 'NEW'); // Varsayılan
+
+        const aiModeText = this.add.text(width / 2, height / 2 + 80, `AI: ${this.registry.get('aiMode')}`, {
+            fontSize: '24px',
+            color: '#ffffff',
+            backgroundColor: '#555555',
+            padding: { x: 15, y: 8 }
+        }).setOrigin(0.5).setInteractive();
+
+        aiModeText.on('pointerdown', () => {
+            const currentMode = this.registry.get('aiMode');
+            const newMode = currentMode === 'NEW' ? 'CLASSIC' : 'NEW';
+            this.registry.set('aiMode', newMode);
+            aiModeText.setText(`AI: ${newMode}`);
+        });
+
+        // Slow Radius Göstergesi
+        this.registry.set('showSlowRadius', false); // Varsayılan
+
+        const slowRadiusText = this.add.text(width / 2, height / 2 + 140, `Slow Radius: ${this.registry.get('showSlowRadius') ? 'ON' : 'OFF'}` , {
+            fontSize: '24px',
+            color: '#ffffff',
+            backgroundColor: '#555555',
+            padding: { x: 15, y: 8 }
+        }).setOrigin(0.5).setInteractive();
+
+        slowRadiusText.on('pointerdown', () => {
+            const currentSetting = this.registry.get('showSlowRadius');
+            this.registry.set('showSlowRadius', !currentSetting);
+            slowRadiusText.setText(`Slow Radius: ${!currentSetting ? 'ON' : 'OFF'}`);
+        });
+
+        // İmza
+        this.add.text(10, height - 10, 'FURSOY', {
+            fontSize: '24px',
+            color: '#aaaaaa'
+        }).setOrigin(0, 1);
     }
 }

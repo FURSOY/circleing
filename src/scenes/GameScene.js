@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Wave değişkenleri
         this.currentWave = 1;
-        this.waveTime = 20;
+        this.waveTime = 15;
         this.waveTimer = this.waveTime;
         this.inWave = false;
         this.nextWaveZone = null;
@@ -75,7 +75,7 @@ export default class GameScene extends Phaser.Scene {
                     y = Phaser.Math.Between(0, this.scale.height);
                 }
 
-                this.enemies.add(new EnemyClass(this, x, y, this.player));
+                this.enemies.add(new EnemyClass(this, x, y, this.player, this.registry.get('aiMode')));
             }
         };
 
