@@ -21,19 +21,16 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemies = this.physics.add.group();
 
-        // Grup içi çarpışma için collider ekleme
         this.enemies.children.iterate(e1 => {
             this.enemies.children.iterate(e2 => {
                 if (e1 !== e2) this.physics.add.collider(e1, e2);
             });
         });
 
-        // Player ve düşman çarpışması
         this.physics.add.overlap(this.player, this.enemies, () => {
             this.scene.start('MenuScene');
         });
 
-        // Wave değişkenleri
         this.currentWave = 1;
         this.waveTime = 15;
         this.waveTimer = this.waveTime;
@@ -41,7 +38,6 @@ export default class GameScene extends Phaser.Scene {
         this.nextWaveZone = null;
         this.nextWaveTimer = 0;
 
-        // UI
         this.waveText = this.add.text(10, 10, '', { fontSize: '20px', fill: '#fff' });
         this.timeText = this.add.text(10, 40, '', { fontSize: '20px', fill: '#fff' });
 
@@ -57,20 +53,19 @@ export default class GameScene extends Phaser.Scene {
 
         const spawnEnemy = (EnemyClass, count) => {
             for (let i = 0; i < count; i++) {
-                // Rastgele kenar seç (0: üst, 1: alt, 2: sol, 3: sağ)
                 const side = Phaser.Math.Between(0, 3);
                 let x, y;
 
-                if (side === 0) { // üst
+                if (side === 0) {
                     x = Phaser.Math.Between(0, this.scale.width);
                     y = -20;
-                } else if (side === 1) { // alt
+                } else if (side === 1) {
                     x = Phaser.Math.Between(0, this.scale.width);
                     y = this.scale.height + 20;
-                } else if (side === 2) { // sol
+                } else if (side === 2) {
                     x = -20;
                     y = Phaser.Math.Between(0, this.scale.height);
-                } else { // sağ
+                } else {
                     x = this.scale.width + 20;
                     y = Phaser.Math.Between(0, this.scale.height);
                 }
@@ -83,7 +78,6 @@ export default class GameScene extends Phaser.Scene {
         if (config.big) spawnEnemy(BigEnemy, config.big);
         if (config.fast) spawnEnemy(FastEnemy, config.fast);
 
-        // Grup içi çarpışmayı güncelle
         this.enemies.children.iterate(e1 => {
             this.enemies.children.iterate(e2 => {
                 if (e1 !== e2) this.physics.add.collider(e1, e2);
@@ -100,11 +94,9 @@ export default class GameScene extends Phaser.Scene {
         const btnX = Phaser.Math.Between(150, width - 150);
         const btnY = Phaser.Math.Between(150, height - 150);
 
-        // Buton arka planı
         this.nextWaveButton = this.add.rectangle(btnX, btnY, 120, 60, 0x4444ff, 0.8);
         this.physics.add.existing(this.nextWaveButton, false);
 
-        // Buton yazısı
         this.nextWaveText = this.add.text(btnX, btnY, "START WAVE", {
             fontSize: "18px",
             fill: "#fff"
@@ -137,7 +129,7 @@ export default class GameScene extends Phaser.Scene {
             if (dist < 60) {
                 this.nextWaveTimer += delta / 1000;
                 if (this.nextWaveTimer >= 3) {
-                    this.startCountdown(); // Geri sayım başlat
+                    this.startCountdown();
                 }
             } else {
                 this.nextWaveTimer = 0;
@@ -149,7 +141,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     startCountdown() {
-        if (this.countdownText) return; // Tekrarlamasın
+        if (this.countdownText) return;
 
         this.nextWaveButton.destroy();
         this.nextWaveText.destroy();

@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, player, aiMode) {
         const radius = 15;
-        const color = 0xff0000; // kırmızı
+        const color = 0xff0000;
 
         const g = scene.add.graphics();
         g.fillStyle(color, 1);
@@ -33,10 +33,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         if (dist > 0) {
             if (this.aiMode === 'CLASSIC') {
-                // Eski düz takip mantığı
                 this.body.setVelocity((dx / dist) * this.speed, (dy / dist) * this.speed);
             } else {
-                // Yeni "önleme" mantığı
                 const timeToReach = dist / this.speed;
                 const futurePlayerX = this.player.x + (this.player.body.velocity.x * timeToReach * 0.8);
                 const futurePlayerY = this.player.y + (this.player.body.velocity.y * timeToReach * 0.8);
